@@ -5,7 +5,7 @@ import {
   CreditCard, FileText, Heart, LayoutDashboard, LockKeyhole, Menu, MessageCircle,
   Search, Send, ShieldCheck, Sparkles, Star, X, Copy, Download, ExternalLink,
   Printer, QrCode, Tag, Upload, UserCheck, UserX, CheckCircle2, AlertCircle,
-  Building, Phone, Mail, HelpCircle, Layers
+  Building, Phone, Mail, HelpCircle, Layers, Compass, Users
 } from 'lucide-react';
 import { api, date, dateTime, money, statusLabel, paymentMethodLabel, generateVietQrUrl } from './api';
 
@@ -268,7 +268,7 @@ function Header({ ready }: { ready: boolean }) {
           <NavLink to="/custom-project">Dự án riêng</NavLink>
           <NavLink to="/portfolio">Sản phẩm</NavLink>
           <NavLink to="/technologies">Công nghệ</NavLink>
-          <NavLink to="/about">Về tôi</NavLink>
+          <NavLink to="/about">Về đội ngũ</NavLink>
           <NavLink to="/faq">Hỏi đáp</NavLink>
           <NavLink to="/contact">Liên hệ</NavLink>
         </nav>
@@ -334,7 +334,7 @@ function Footer() {
           <p>
             Giải pháp phần mềm hiện đại cho cá nhân, startup và doanh nghiệp.
             <br />
-            Thiết kế & phát triển trực tiếp bởi Nguyễn Văn Tấn.
+            Phát triển bởi Đội ngũ Kỹ sư VanTanTheDEV · Giám sát bởi Nguyễn Văn Tấn (CEO & Giám đốc Vận hành).
           </p>
           <div style={{ marginTop: 12, display: 'flex', gap: 14, fontSize: 11, color: '#94a3b8' }}>
             <span><Mail size={13} style={{ verticalAlign: -2 }} /> {settings.contact_email || 'contact@vantanthedev.com'}</span>
@@ -355,7 +355,7 @@ function Footer() {
           <Link to="/portfolio">Sản Phẩm & Case Studies</Link>
           <Link to="/technologies">Stack Công Nghệ</Link>
           <Link to="/faq">Câu Hỏi Thường Gặp (FAQ)</Link>
-          <Link to="/contact">Liên Hệ Trực Tiếp</Link>
+          <Link to="/contact">Liên Hệ Đội Ngũ Hỗ Trợ</Link>
         </div>
         <div className="footer-cta">
           <span className="eyebrow">CÓ MỘT BÀI TOÁN?</span>
@@ -367,7 +367,7 @@ function Footer() {
       </div>
       <div className="footer-bottom">
         <span>
-          © {new Date().getFullYear()} VanTanTheDEV · Nguyễn Văn Tấn. Toàn quyền bảo lưu.
+          © {new Date().getFullYear()} VanTanTheDEV Studio · Nguyễn Văn Tấn (CEO & COO). Toàn quyền bảo lưu.
         </span>
         <div>
           <Link to="/terms">Điều khoản</Link>
@@ -476,7 +476,7 @@ function Home() {
               </div>
               <div className="terminal-foot">
                 <span>
-                  <span className="signal-dot" /> Trực tiếp làm việc cùng Nguyễn Văn Tấn
+                  <span className="signal-dot" /> Đội ngũ Kỹ sư VanTanTheDEV · Giám sát bởi Nguyễn Văn Tấn (CEO & COO)
                 </span>
                 <span>VN · REMOTE</span>
               </div>
@@ -611,23 +611,23 @@ function Home() {
           </div>
         </div>
         <div className="feature-copy">
-          <span className="eyebrow">LÀM VIỆC TRỰC TIẾP</span>
+          <span className="eyebrow">QUY TRÌNH & ĐỘI NGŨ CHUYÊN NGHIỆP</span>
           <h2>
-            Một người phụ trách.<br />
-            <span className="muted-heading">Một cuộc trò chuyện liền mạch.</span>
+            Đội ngũ kỹ sư tận tâm.<br />
+            <span className="muted-heading">Vận hành và quản lý chất lượng bởi CEO.</span>
           </h2>
           <p>
-            Làm việc trực tiếp cùng Nguyễn Văn Tấn, Full-Stack Developer sáng lập VanTanTheDEV.
-            Mọi quyết định kỹ thuật được giải thích bằng ngôn ngữ bạn hiểu, gắn liền với hiệu quả kinh doanh
-            thay vì những thuật ngữ phức tạp không cần thiết.
+            Hợp tác trực tiếp cùng đội ngũ kỹ sư phần mềm chuyên trách tại VanTanTheDEV, dưới sự định hướng
+            kiến trúc và kiểm soát chất lượng của Nguyễn Văn Tấn (CEO & Giám đốc Vận hành). Mọi quyết định kỹ thuật
+            được giải thích rõ ràng, minh bạch và gắn liền với hiệu quả kinh doanh của bạn.
           </p>
           <Link to="/about" className="text-link">
-            Tìm hiểu triết lý và kinh nghiệm kỹ thuật <ArrowRight size={16} />
+            Tìm hiểu triết lý và cấu trúc đội ngũ <ArrowRight size={16} />
           </Link>
           <div className="feature-stats">
             <div>
-              <b>01</b>
-              <span>Đầu mối kỹ thuật xuyên suốt</span>
+              <b>100%</b>
+              <span>Đội ngũ kỹ sư chuyên trách</span>
             </div>
             <div>
               <b>100%</b>
@@ -1398,7 +1398,7 @@ function Booking() {
         return;
       }
       if (form.description.trim().length < 20) {
-        setError('Vui lòng mô tả yêu cầu dự án tối thiểu 20 ký tự để Nguyễn Văn Tấn có đủ dữ liệu ước tính.');
+        setError('Vui lòng mô tả yêu cầu dự án tối thiểu 20 ký tự để Đội ngũ Kỹ sư có đủ dữ liệu ước tính.');
         return;
       }
     }
@@ -1461,7 +1461,7 @@ function Booking() {
         </h1>
         <p>
           Không thu phí trước ở bước này. Bạn sẽ nhận được bản xác nhận phạm vi và lịch trình
-          chi tiết từ Nguyễn Văn Tấn trước khi khởi động.
+          chi tiết từ Đội ngũ Kỹ sư VanTanTheDEV (được phê duyệt bởi Giám đốc Vận hành) trước khi khởi động.
         </p>
       </div>
 
@@ -1492,6 +1492,15 @@ function Booking() {
             <div className="booking-step">
               <span className="eyebrow">BƯỚC 01 / GÓI DỊCH VỤ</span>
               <h2>Chọn gói phạm vi phù hợp với bạn.</h2>
+
+              <div className="step-guidance-card">
+                <div className="step-guidance-icon"><Compass size={18} /></div>
+                <div className="step-guidance-text">
+                  <h4>Bước 1 / 5: Chọn gói giải pháp</h4>
+                  <p>Mỗi gói đã bao gồm đầy đủ tiêu chuẩn kiểm thử và bàn giao mã nguồn. Chọn gói phù hợp với ngân sách và thời hạn của bạn. Tiếp theo, bạn sẽ mô tả bài toán cần triển khai.</p>
+                </div>
+              </div>
+
               <div className="booking-package-list">
                 {service.packages?.map(p => (
                   <button
@@ -1529,6 +1538,15 @@ function Booking() {
             <div className="booking-step">
               <span className="eyebrow">BƯỚC 02 / YÊU CẦU DỰ ÁN</span>
               <h2>Mô tả bài toán bạn muốn giải quyết.</h2>
+
+              <div className="step-guidance-card">
+                <div className="step-guidance-icon"><FileText size={18} /></div>
+                <div className="step-guidance-text">
+                  <h4>Bước 2 / 5: Mô tả yêu cầu dự án</h4>
+                  <p>Hãy chia sẻ bài toán cốt lõi, đối tượng khách hàng và mục tiêu thành công. Đội ngũ kỹ sư sẽ phân tích dữ liệu này để phản hồi phương án triển khai tối ưu.</p>
+                </div>
+              </div>
+
               <div className="form-grid">
                 <Field label="Tên dự án" required>
                   <input
@@ -1597,6 +1615,15 @@ function Booking() {
             <div className="booking-step">
               <span className="eyebrow">BƯỚC 03 / TIỆN ÍCH MỞ RỘNG</span>
               <h2>Chọn thêm các module bạn cần.</h2>
+
+              <div className="step-guidance-card">
+                <div className="step-guidance-icon"><Layers size={18} /></div>
+                <div className="step-guidance-text">
+                  <h4>Bước 3 / 5: Tiện ích mở rộng (Tùy chọn)</h4>
+                  <p>Bạn có thể bổ sung các module nâng cao như VietQR tự động, SEO tăng tốc hoặc đa ngôn ngữ. Nếu gói cơ bản đã đủ, bạn có thể bỏ qua bước này.</p>
+                </div>
+              </div>
+
               <p className="step-description">
                 Chỉ chọn phần thực sự cần thiết. Bạn hoàn toàn có thể thảo luận và điều chỉnh
                 trước khi chốt thỏa thuận.
@@ -1637,6 +1664,14 @@ function Booking() {
             <div className="booking-step">
               <span className="eyebrow">BƯỚC 04 / ƯU ĐÃI & PHƯƠNG THỨC</span>
               <h2>Mã ưu đãi & Phương thức thanh toán.</h2>
+
+              <div className="step-guidance-card">
+                <div className="step-guidance-icon"><CreditCard size={18} /></div>
+                <div className="step-guidance-text">
+                  <h4>Bước 4 / 5: Ưu đãi & Phương thức thanh toán</h4>
+                  <p>Áp dụng coupon nếu có và chọn hình thức thanh toán mong muốn (VietQR hoặc ngân hàng). Chưa có khoản thanh toán nào bị trừ ở bước gửi yêu cầu này.</p>
+                </div>
+              </div>
 
               <div className="coupon-box">
                 <span className="eyebrow" style={{ color: '#b7a9ff', marginBottom: 6, display: 'block' }}>
@@ -1696,6 +1731,14 @@ function Booking() {
             <div className="booking-step">
               <span className="eyebrow">BƯỚC 05 / XÁC NHẬN</span>
               <h2>Kiểm tra thông tin trước khi gửi.</h2>
+
+              <div className="step-guidance-card">
+                <div className="step-guidance-icon"><CheckCircle2 size={18} /></div>
+                <div className="step-guidance-text">
+                  <h4>Bước 5 / 5: Rà soát & Xác nhận gửi yêu cầu</h4>
+                  <p>Kiểm tra lại toàn bộ thông tin dự án. Sau khi bấm "Gửi yêu cầu", hệ thống sẽ chuyển bạn tới Không gian dự án riêng để theo dõi tiến độ và làm việc trực tiếp với đội ngũ kỹ sư phụ trách.</p>
+                </div>
+              </div>
 
               <div className="review-summary">
                 <div>
@@ -2113,25 +2156,6 @@ function AuthPage({ mode }: { mode: 'login' | 'register' | 'forgot' }) {
     }
   }
 
-  // Quick login helper for demo reviewer
-  const quickLogin = async (demoEmail: string, demoPass: string) => {
-    setBusy(true);
-    setError('');
-    try {
-      const data = await api<User>('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email: demoEmail, password: demoPass })
-      });
-      setUser(data);
-      flash(`Đăng nhập thành công với vai trò ${data.role === 'admin' ? 'Quản trị viên' : 'Khách hàng'}!`);
-      nav(data.role === 'admin' ? '/admin' : from, { replace: true });
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
   return (
     <main className="auth-page">
       <div className="auth-art">
@@ -2146,8 +2170,8 @@ function AuthPage({ mode }: { mode: 'login' | 'register' | 'forgot' }) {
             của bạn <span>tiến lên.</span>
           </h2>
           <p>
-            Theo dõi tiến độ theo thời gian thực, trao đổi trực tiếp cùng Nguyễn Văn Tấn
-            và quản lý mọi tài liệu, hóa đơn dự án ở cùng một nơi.
+            Theo dõi tiến độ theo thời gian thực, trao đổi trực tiếp cùng đội ngũ kỹ sư phụ trách dự án,
+            dưới sự kiểm soát chất lượng của CEO & Ban Vận hành.
           </p>
           <div className="auth-value">
             <Check /> Lộ trình dự án 06 mốc minh bạch
@@ -2160,7 +2184,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' | 'forgot' }) {
           </div>
         </div>
         <span className="auth-art-foot">
-          INDEPENDENT COMMERCIAL STUDIO · NGUYỄN VĂN TẤN
+          VANTANTHEDEV SOFTWARE STUDIO · ĐỘI NGŨ KỸ SƯ CHUYÊN NGHIỆP
         </span>
       </div>
 
@@ -2315,31 +2339,6 @@ function AuthPage({ mode }: { mode: 'login' | 'register' | 'forgot' }) {
               <ArrowRight size={15} />
             </button>
           </form>
-
-          {/* Quick Demo Logins for Reviewer */}
-          {!register && !forgot && (
-            <div className="demo-accounts-box">
-              <p>⚡ TRẢI NGHIỆM NHANH (TÀI KHOẢN MẪU CÓ SẴN DỮ LIỆU):</p>
-              <div className="demo-buttons-row">
-                <button
-                  type="button"
-                  className="demo-pill-btn"
-                  onClick={() => quickLogin('admin@vantanthedev.com', 'Admin@2026!')}
-                >
-                  <b>Quản trị viên (Admin)</b>
-                  <small>Nguyễn Văn Tấn</small>
-                </button>
-                <button
-                  type="button"
-                  className="demo-pill-btn"
-                  onClick={() => quickLogin('khachhang@example.com', 'Customer@2026!')}
-                >
-                  <b>Khách hàng (Customer)</b>
-                  <small>Lê Hoàng Nam (TechViet)</small>
-                </button>
-              </div>
-            </div>
-          )}
 
           <div className="auth-switch">
             {register ? (
@@ -2525,6 +2524,8 @@ function DashboardHome() {
   }, []);
 
   const active = orders.filter(o => !['completed', 'cancelled'].includes(o.status));
+  const unpaidOrders = orders.filter(o => o.payment_status !== 'paid' && o.status !== 'cancelled');
+  const waitingOrders = orders.filter(o => o.status === 'waiting_customer');
 
   return (
     <div className="dashboard-content">
@@ -2532,12 +2533,87 @@ function DashboardHome() {
         <div>
           <span className="eyebrow">CLIENT WORKSPACE / TỔNG QUAN</span>
           <h1>Chào {user?.name.split(' ').slice(-1)[0]}.</h1>
-          <p>Không gian quản lý tiến độ, trao đổi trực tiếp và thanh toán dự án phần mềm.</p>
+          <p>Không gian quản lý tiến độ, trao đổi trực tiếp với đội ngũ kỹ sư và thanh toán dự án.</p>
         </div>
         <Link to="/custom-project" className="button button-bright">
           Tạo yêu cầu mới <ArrowUpRight size={15} />
         </Link>
       </div>
+
+      {/* Next-action Guidance Banner */}
+      {orders.length === 0 ? (
+        <div className="next-action-banner">
+          <div className="next-action-content">
+            <div className="next-action-badges">
+              <span className="badge badge-accent">BƯỚC TIẾP THEO CHO BẠN</span>
+            </div>
+            <h3>Khởi tạo dự án đầu tiên cùng Đội ngũ VanTanTheDEV</h3>
+            <p>
+              Bạn đã có tài khoản khách hàng. Hãy chọn một gói dịch vụ phù hợp hoặc gửi yêu cầu dự án riêng
+              để đội ngũ kỹ sư phân tích kiến trúc và phản hồi lộ trình cụ thể trong vòng 24h.
+            </p>
+          </div>
+          <div className="next-action-actions">
+            <Link to="/services" className="button button-bright button-sm">
+              Khám phá dịch vụ <ArrowRight size={14} />
+            </Link>
+            <Link to="/custom-project" className="button button-quiet button-sm">
+              Ước tính dự án riêng <ArrowUpRight size={14} />
+            </Link>
+          </div>
+        </div>
+      ) : unpaidOrders.length > 0 ? (
+        <div className="next-action-banner">
+          <div className="next-action-content">
+            <div className="next-action-badges">
+              <span className="badge badge-warning">CẦN THANH TOÁN TẠM ỨNG: MÃ {unpaidOrders[0].order_number}</span>
+            </div>
+            <h3>Dự án "{unpaidOrders[0].project_name}" đang chờ xác nhận thanh toán</h3>
+            <p>
+              Đơn hàng đã được tiếp nhận. Bạn có thể thanh toán nhanh qua mã VietQR tự động để đội ngũ kỹ sư kích hoạt môi trường phát triển ngay hôm nay.
+            </p>
+          </div>
+          <div className="next-action-actions">
+            <Link to={`/dashboard/orders/${unpaidOrders[0].id}`} className="button button-bright button-sm">
+              Mở chi tiết & Quét VietQR <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      ) : waitingOrders.length > 0 ? (
+        <div className="next-action-banner">
+          <div className="next-action-content">
+            <div className="next-action-badges">
+              <span className="badge badge-accent">CẦN PHẢN HỒI: MÃ {waitingOrders[0].order_number}</span>
+            </div>
+            <h3>Kỹ sư đang chờ bạn phản hồi bản xem thử "{waitingOrders[0].project_name}"</h3>
+            <p>
+              Đội ngũ kỹ thuật đã gửi bản demo hoặc câu hỏi cần bạn xác nhận trong hộp thoại. Hãy phản hồi để tiến trình dự án tiếp tục được đẩy nhanh.
+            </p>
+          </div>
+          <div className="next-action-actions">
+            <Link to={`/dashboard/orders/${waitingOrders[0].id}`} className="button button-bright button-sm">
+              Phản hồi kỹ sư ngay <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="next-action-banner">
+          <div className="next-action-content">
+            <div className="next-action-badges">
+              <span className="badge badge-accent">TRẠNG THÁI VẬN HÀNH TỐT</span>
+            </div>
+            <h3>Đội ngũ kỹ sư đang tích cực triển khai các dự án của bạn</h3>
+            <p>
+              Mọi cập nhật mã nguồn, tệp tài liệu và mốc bàn giao sẽ được thông báo ngay tại Không gian dự án.
+            </p>
+          </div>
+          <div className="next-action-actions">
+            <Link to="/dashboard/orders" className="button button-bright button-sm">
+              Xem tiến độ dự án <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="dash-metrics">
         <Metric label="Đang triển khai" value={active.length} note="dự án đang trong tiến độ" />
@@ -2556,6 +2632,25 @@ function DashboardHome() {
           value={notifications.filter(n => !n.read_at).length}
           note="chưa đọc"
         />
+      </div>
+
+      {/* 3-Step Guidance Roadmap */}
+      <div className="onboarding-guide-grid">
+        <div className="onboarding-guide-card">
+          <span className="step-num">01</span>
+          <h4>Gửi yêu cầu hoặc đặt dịch vụ</h4>
+          <p>Chọn gói giải pháp có sẵn hoặc gửi mô tả dự án riêng với ngân sách và thời hạn bạn mong muốn.</p>
+        </div>
+        <div className="onboarding-guide-card">
+          <span className="step-num">02</span>
+          <h4>Trao đổi trực tiếp với Kỹ sư phụ trách</h4>
+          <p>Làm việc qua hộp thoại dự án, nhận bản demo từng mốc và theo dõi lộ trình 06 giai đoạn minh bạch.</p>
+        </div>
+        <div className="onboarding-guide-card">
+          <span className="step-num">03</span>
+          <h4>Nghiệm thu & Bàn giao 100% mã nguồn</h4>
+          <p>Nhận toàn bộ Git repository, tài liệu triển khai và hóa đơn điện tử có xác thực bởi CEO & COO.</p>
+        </div>
       </div>
 
       <div className="dash-columns">
@@ -2953,8 +3048,54 @@ function OrderDetail() {
           ))}
         </div>
         <p className="timeline-note">
-          Tiến độ được cập nhật trực tiếp bởi Nguyễn Văn Tấn theo từng mốc bàn giao thực tế.
+          Tiến độ được cập nhật bởi Đội ngũ Kỹ sư & Giám sát chất lượng bởi Nguyễn Văn Tấn (CEO & Giám đốc Vận hành) theo từng mốc bàn giao thực tế.
         </p>
+      </div>
+
+      {/* Dynamic Next-Step Guidance for Order */}
+      <div className="roadmap-status-card">
+        <div className="roadmap-status-info">
+          <h4>
+            {order.status === 'pending'
+              ? 'Trạng thái: Đang tiếp nhận & Phân tích giải pháp'
+              : order.status === 'confirmed'
+              ? 'Trạng thái: Đơn hàng đã xác nhận · Chuẩn bị lập trình'
+              : order.status === 'in_progress'
+              ? 'Trạng thái: Đang phát triển & Kiểm thử chất lượng'
+              : order.status === 'waiting_customer'
+              ? 'Trạng thái: Chờ khách hàng phản hồi / Duyệt bản demo'
+              : order.status === 'revision'
+              ? 'Trạng thái: Đang tinh chỉnh theo phản hồi của bạn'
+              : order.status === 'completed'
+              ? 'Trạng thái: Hoàn tất & Nghiệm thu bàn giao 100%'
+              : 'Trạng thái: Đơn hàng đã đóng'}
+          </h4>
+          <p>
+            {order.status === 'pending'
+              ? 'Bước tiếp theo: Đội ngũ Kỹ sư đang phân tích bài toán và sẽ gửi tài liệu đề xuất giải pháp trong hộp thoại bên dưới. Nếu có yêu cầu đặc thù, bạn có thể gửi tin nhắn trao đổi ngay.'
+              : order.status === 'confirmed'
+              ? 'Bước tiếp theo: Kỹ sư phụ trách đang thiết lập repository và database. Bạn có thể gửi thêm tài liệu hoặc asset trong mục Tệp dự án.'
+              : order.status === 'in_progress'
+              ? 'Bước tiếp theo: Kỹ sư đang phát triển các module. Khi hoàn thành mốc xem thử, bạn sẽ nhận được thông báo để kiểm tra và đóng góp ý kiến.'
+              : order.status === 'waiting_customer'
+              ? 'Bước tiếp theo: Kỹ sư đã tải lên bản xem thử hoặc câu hỏi cần bạn xác nhận. Vui lòng phản hồi trong hộp thoại để dự án tiếp tục tiến hành.'
+              : order.status === 'revision'
+              ? 'Bước tiếp theo: Đội ngũ đang thực hiện chỉnh sửa theo góp ý của bạn. Phiên bản cập nhật sẽ sớm được bàn giao.'
+              : order.status === 'completed'
+              ? 'Bước tiếp theo: Toàn bộ mã nguồn đã sẵn sàng ở mục Tệp bàn giao. Bạn có thể tải về và gửi đánh giá nghiệm thu bên dưới.'
+              : 'Dự án đã đóng hoặc hủy.'}
+          </p>
+        </div>
+        <div className="roadmap-status-actions">
+          {order.payment_status !== 'paid' && (
+            <button
+              className="button button-small button-bright"
+              onClick={() => openVietQr(order.order_number, order.amount)}
+            >
+              <QrCode size={14} /> Thanh toán VietQR
+            </button>
+          )}
+        </div>
       </div>
 
       {/* VietQR Quick Payment Box if unpaid */}
@@ -3110,7 +3251,7 @@ function OrderDetail() {
             </div>
             <div>
               <span>CÔNG NGHỆ ƯU TIÊN</span>
-              <b>{order.requirements?.technology || 'Nguyễn Văn Tấn đề xuất'}</b>
+              <b>{order.requirements?.technology || 'Đội ngũ Kỹ sư đề xuất'}</b>
             </div>
             <div>
               <span>TIỆN ÍCH ĐÃ CHỌN</span>
@@ -3246,7 +3387,7 @@ function OrderDetail() {
           <div className="panel-heading">
             <div>
               <span className="eyebrow">PROJECT ROOM / TRAO ĐỔI TRỰC TIẾP</span>
-              <h2>Hộp thoại với Nguyễn Văn Tấn</h2>
+              <h2>Trao đổi cùng Đội ngũ Kỹ sư VanTanTheDEV</h2>
             </div>
             <MessageCircle size={16} />
           </div>
@@ -4747,7 +4888,7 @@ function Portfolio() {
         </h1>
         <p>
           Các case study dưới đây minh họa cách tiếp cận kiến trúc, hiệu năng và trải nghiệm
-          sản phẩm của Nguyễn Văn Tấn tại VanTanTheDEV.
+          sản phẩm do Đội ngũ Kỹ sư VanTanTheDEV triển khai dưới sự định hướng kiến trúc của CEO Nguyễn Văn Tấn.
         </p>
       </div>
 
@@ -4949,22 +5090,22 @@ function About() {
     <main className="page-main">
       <div className="about-hero">
         <div>
-          <span className="eyebrow">NGƯỜI ĐỨNG SAU SẢN PHẨM</span>
+          <span className="eyebrow">ĐỘI NGŨ & CƠ CẤU TỔ CHỨC</span>
           <h1>
-            Xin chào,<br />
-            tôi là <span className="text-gradient">Nguyễn Văn Tấn.</span>
+            Đội ngũ Kỹ sư &<br />
+            Ban Vận hành <span className="text-gradient">VanTanTheDEV.</span>
           </h1>
           <p className="about-lede">
-            Full-Stack Developer & Nhà sáng lập VanTanTheDEV. Tôi xây dựng nền tảng này để mang
-            dịch vụ kỹ thuật phần mềm chất lượng cao, minh bạch phạm vi và chi phí đến các cá nhân,
-            startup và doanh nghiệp.
+            VanTanTheDEV tập hợp đội ngũ kỹ sư phần mềm tài năng, chuyên sâu về kiến trúc Web, Mobile và Hạ tầng Cloud.
+            Được sáng lập và điều hành bởi Nguyễn Văn Tấn (Sáng lập, CEO & Giám đốc Vận hành - COO),
+            chúng tôi mang đến dịch vụ phát triển phần mềm chuẩn mực thương mại, minh bạch và toàn diện cho doanh nghiệp.
           </p>
           <div style={{ display: 'flex', gap: 12 }}>
             <Link to="/custom-project" className="button button-bright">
-              Kể tôi nghe về dự án của bạn <ArrowUpRight size={15} />
+              Gửi yêu cầu tới Đội ngũ Kỹ sư <ArrowUpRight size={15} />
             </Link>
             <Link to="/contact" className="button button-quiet">
-              Liên hệ trực tiếp <Mail size={14} />
+              Liên hệ Đội ngũ Hỗ trợ <Mail size={14} />
             </Link>
           </div>
         </div>
@@ -4973,11 +5114,46 @@ function About() {
           <i>·</i>
           <span>DEV</span>
           <small>
-            DESIGN WITH INTENT<br />
-            ENGINEER FOR REAL PRODUCTION
+            ENGINEERED BY SQUADS<br />
+            DIRECTED BY FOUNDER & COO
           </small>
         </div>
       </div>
+
+      {/* Organizational Structure */}
+      <section style={{ marginTop: 20, marginBottom: 36 }}>
+        <span className="eyebrow" style={{ display: 'block', marginBottom: 12 }}>
+          <Users size={14} style={{ verticalAlign: -2 }} /> CƠ CẤU TỔ CHỨC & VAI TRÒ CHUYÊN TRÁCH
+        </span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+          <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+            <span className="eyebrow" style={{ color: '#c4b5fd' }}>BAN ĐIỀU HÀNH & KIẾN TRÚC</span>
+            <h3 style={{ fontSize: 16, margin: '8px 0 4px', color: '#f1f5f9' }}>Nguyễn Văn Tấn</h3>
+            <small style={{ color: '#94a3b8', display: 'block', marginBottom: 10 }}>Sáng lập, CEO & Giám đốc Vận hành (COO)</small>
+            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+              Định hướng chiến lược công nghệ, phê duyệt kiến trúc kỹ thuật và kiểm soát chất lượng sản phẩm bàn giao, đảm bảo từng dòng mã nguồn đạt tiêu chuẩn tối ưu cao nhất.
+            </p>
+          </div>
+
+          <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+            <span className="eyebrow" style={{ color: '#5bd7de' }}>ĐỘI NGŨ KỸ SƯ PHẦN MỀM</span>
+            <h3 style={{ fontSize: 16, margin: '8px 0 4px', color: '#f1f5f9' }}>Engineering Squad</h3>
+            <small style={{ color: '#94a3b8', display: 'block', marginBottom: 10 }}>Frontend, Backend & Full-Stack Engineers</small>
+            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+              Lập trình trực tiếp, xây dựng API hiệu năng cao, tối ưu cơ sở dữ liệu và tích hợp các giải pháp thanh toán VietQR tự động, đảm bảo tốc độ tải trang Lighthouse 95+.
+            </p>
+          </div>
+
+          <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+            <span className="eyebrow" style={{ color: '#a7f3d0' }}>TƯ VẤN & CHĂM SÓC KHÁCH HÀNG</span>
+            <h3 style={{ fontSize: 16, margin: '8px 0 4px', color: '#f1f5f9' }}>Customer Support Team</h3>
+            <small style={{ color: '#94a3b8', display: 'block', marginBottom: 10 }}>Chuyên viên Kỹ thuật & Hỗ trợ Khách hàng</small>
+            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+              Đầu mối tiếp nhận yêu cầu 24/7, phản hồi trong 2-4 giờ, hướng dẫn khách hàng trong suốt quá trình triển khai và hỗ trợ bảo hành kỹ thuật sau khi bàn giao.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section className="about-values">
         <div>
@@ -4989,9 +5165,9 @@ function About() {
         </div>
         <div className="values-copy">
           <p>
-            Phần mềm tốt là hiểu đúng điểm nghẽn của người dùng, chọn kiến trúc phù hợp và xây dựng
-            nó một cách vững chắc. Tôi ưu tiên trao đổi thẳng thắn về tính khả thi, lựa chọn công nghệ
-            bền vững thay vì chạy theo xu hướng nhất thời, và bàn giao để bạn toàn quyền làm chủ sản phẩm.
+            Phần mềm xuất sắc đến từ sự phối hợp nhịp nhàng giữa đội ngũ kỹ sư thực thi tài năng và quy trình
+            kiểm soát chất lượng nghiêm ngặt từ Ban Vận hành. Chúng tôi ưu tiên trao đổi thẳng thắn về tính khả thi,
+            lựa chọn công nghệ bền vững thay vì chạy theo trào lưu, và bàn giao để bạn toàn quyền làm chủ mã nguồn.
           </p>
           <div className="value-list">
             <div>
@@ -5004,8 +5180,8 @@ function About() {
             <div>
               <b>02</b>
               <span>
-                <strong>Chia nhỏ các mốc để kiểm chứng</strong>
-                <small>Các mốc tiến độ rõ ràng giúp điều chỉnh sớm, không có bất ngờ phút chót.</small>
+                <strong>Đội ngũ kỹ sư chuyên trách từng phân hệ</strong>
+                <small>Mỗi module được phụ trách bởi kỹ sư chuyên sâu, đảm bảo chất lượng kỹ thuật cao nhất.</small>
               </span>
             </div>
             <div>
@@ -5024,7 +5200,7 @@ function About() {
             </div>
           </div>
           <span className="eyebrow about-owner">
-            NGUYỄN VĂN TẤN · FULL-STACK DEVELOPER · VANTANTHEDEV
+            VANTANTHEDEV SOFTWARE STUDIO · ĐỘI NGŨ KỸ SƯ CHUYÊN NGHIỆP · GIÁM SÁT BỞI CEO NGUYỄN VĂN TẤN
           </span>
         </div>
       </section>
@@ -5153,7 +5329,7 @@ function Technologies() {
           Tôi sẽ cùng bạn lựa chọn bộ công cụ phù hợp nhất sau khi hiểu rõ hạ tầng và nguồn lực vận hành của bạn.
         </p>
         <Link to="/contact">
-          Thảo luận kỹ thuật cùng Nguyễn Văn Tấn <ArrowRight size={15} />
+          Thảo luận kỹ thuật cùng Đội ngũ Kỹ sư & Tư vấn <ArrowRight size={15} />
         </Link>
       </div>
     </main>
@@ -5218,11 +5394,11 @@ function FAQ() {
       [
         [
           'Ai có quyền truy cập vào dữ liệu dự án của tôi?',
-          'Dữ liệu dự án được lưu trữ bảo mật và chỉ có bạn cùng người phụ trách (Nguyễn Văn Tấn) có quyền truy cập thông qua phiên làm việc đã xác thực.'
+          'Dữ liệu dự án được lưu trữ bảo mật và chỉ có bạn cùng Đội ngũ Kỹ sư phụ trách và Ban Quản lý có quyền truy cập thông qua phiên làm việc đã xác thực.'
         ],
         [
           'Bạn có hỗ trợ thiết lập hosting, tên miền và server không?',
-          'Có. Tôi hỗ trợ cấu hình trọn gói máy chủ VPS, Cloudflare, SSL HTTPS và quy trình triển khai tự động Docker theo hạ tầng của bạn.'
+          'Có. Chúng tôi hỗ trợ cấu hình trọn gói máy chủ VPS, Cloudflare, SSL HTTPS và quy trình triển khai tự động Docker theo hạ tầng của bạn.'
         ]
       ]
     ]
@@ -5262,9 +5438,9 @@ function FAQ() {
           ))}
           <div className="faq-contact">
             <b>Bạn có câu hỏi chưa được giải đáp tại đây?</b>
-            <p>Hãy gửi tin nhắn trực tiếp, tôi sẽ phản hồi trong vòng 2 - 4 giờ làm việc.</p>
+            <p>Hãy gửi tin nhắn trực tiếp, đội ngũ kỹ thuật sẽ phản hồi trong vòng 2 - 4 giờ làm việc.</p>
             <Link to="/contact" className="text-link">
-              Liên hệ trực tiếp với Nguyễn Văn Tấn <ArrowRight size={15} />
+              Liên hệ Đội ngũ Kỹ thuật & Hỗ trợ <ArrowRight size={15} />
             </Link>
           </div>
         </div>
@@ -5329,8 +5505,12 @@ function Contact() {
           </p>
           <div className="contact-meta">
             <div>
-              <span>KỸ SƯ PHỤ TRÁCH</span>
-              <b>Nguyễn Văn Tấn</b>
+              <span>ĐỘI NGŨ PHỤ TRÁCH</span>
+              <b>Kỹ sư Dự án & CSKH VanTanTheDEV</b>
+            </div>
+            <div>
+              <span>GIÁM SÁT VẬN HÀNH</span>
+              <b>Nguyễn Văn Tấn (CEO & COO)</b>
             </div>
             <div>
               <span>EMAIL TRỰC TIẾP</span>
@@ -5363,7 +5543,7 @@ function Contact() {
               <span className="eyebrow">YÊU CẦU ĐÃ ĐƯỢC TIẾP NHẬN</span>
               <h2>Cảm ơn bạn đã gửi thông tin.</h2>
               <p>
-                Nguyễn Văn Tấn đã nhận được yêu cầu của bạn và sẽ phản hồi chi tiết qua địa chỉ
+                Đội ngũ kỹ thuật VanTanTheDEV đã tiếp nhận yêu cầu của bạn và sẽ phản hồi chi tiết qua địa chỉ
                 email hoặc số điện thoại bạn đã cung cấp.
               </p>
               <Link to="/" className="text-link" style={{ marginTop: 14 }}>
@@ -5540,7 +5720,7 @@ function Legal({ title }: { title: string }) {
       </article>
 
       <div className="legal-foot">
-        <span>VanTanTheDEV · Nguyễn Văn Tấn · Studio Phát Triển Phần Mềm</span>
+        <span>VanTanTheDEV Software Studio · Đội Ngũ Kỹ Sư Chuyên Nghiệp · Nguyễn Văn Tấn (CEO & COO)</span>
         <Link to="/contact">
           Trao đổi chi tiết <ArrowRight size={14} />
         </Link>
@@ -5668,7 +5848,7 @@ function CommandPalette() {
     { name: 'Ước tính dự án riêng (Estimator)', path: '/custom-project', type: 'CÔNG CỤ' },
     { name: 'Sản phẩm & Case Studies', path: '/portfolio', type: 'KHÁM PHÁ' },
     { name: 'Stack công nghệ kỹ thuật', path: '/technologies', type: 'KỸ THUẬT' },
-    { name: 'Về Nguyễn Văn Tấn', path: '/about', type: 'GIỚI THIỆU' },
+    { name: 'Về Đội ngũ & Ban Điều Hành', path: '/about', type: 'GIỚI THIỆU' },
     { name: 'Câu hỏi thường gặp (FAQ)', path: '/faq', type: 'HỖ TRỢ' },
     { name: 'Liên hệ tư vấn trực tiếp', path: '/contact', type: 'LIÊN HỆ' },
     { name: 'Không gian khách hàng (Dashboard)', path: '/dashboard', type: 'KHÁCH HÀNG' }
@@ -5879,7 +6059,8 @@ function InvoiceModal({ order, onClose }: { order: Order; onClose: () => void })
               VanTanThe<span>DEV</span>
             </div>
             <p className="inv-seller">
-              Đơn vị cung cấp: <b>Nguyễn Văn Tấn</b> (VanTanTheDEV Studio)<br />
+              Đơn vị cung cấp: <b>VanTanTheDEV Software Studio</b><br />
+              Đại diện: <b>Nguyễn Văn Tấn</b> (Sáng lập, CEO & Giám đốc Vận hành)<br />
               Email: contact@vantanthedev.com · Hotline: +84 901 234 567<br />
               Dịch vụ phần mềm thương mại & giải pháp công nghệ số
             </p>
@@ -6004,11 +6185,12 @@ function InvoiceModal({ order, onClose }: { order: Order; onClose: () => void })
             </p>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <span>ĐẠI DIỆN VANTANTHEDEV:</span>
+            <span>ĐẠI DIỆN BAN ĐIỀU HÀNH & VẬN HÀNH:</span>
             <div style={{ marginTop: 12, color: '#4f46e5', fontWeight: 800, letterSpacing: 1, fontFamily: 'var(--display)' }}>
               [ĐÃ XÁC THỰC ĐIỆN TỬ]
             </div>
             <b>NGUYỄN VĂN TẤN</b>
+            <div style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>Sáng lập, CEO & Giám đốc Vận hành (COO)</div>
           </div>
         </div>
       </div>

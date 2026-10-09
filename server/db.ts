@@ -353,26 +353,62 @@ export const seedCoupons = [
   ['cpn-4', 'PRODEV', 'fixed', 1000000, 15000000, 1000000, 25, 3, 1]
 ];
 
-export function seed() {
+export function purgeFakeData() {
   transaction(() => {
-    // 1. Seed Admin User (Nguyễn Văn Tấn)
+    // 1. Delete messages referencing demo orders or demo sender
+    db.prepare("DELETE FROM messages WHERE sender_id = 'user-customer-nam' OR order_id IN (SELECT id FROM orders WHERE user_id = 'user-customer-nam' OR id IN ('ord-demo-01', 'ord-demo-02', 'ord-demo-03'))").run();
+
+    // 2. Delete order files referencing demo orders or demo uploader
+    db.prepare("DELETE FROM order_files WHERE user_id = 'user-customer-nam' OR order_id IN (SELECT id FROM orders WHERE user_id = 'user-customer-nam' OR id IN ('ord-demo-01', 'ord-demo-02', 'ord-demo-03'))").run();
+
+    // 3. Delete reviews referencing demo user or demo orders
+    db.prepare("DELETE FROM reviews WHERE user_id = 'user-customer-nam' OR order_id IN (SELECT id FROM orders WHERE user_id = 'user-customer-nam' OR id IN ('ord-demo-01', 'ord-demo-02', 'ord-demo-03')) OR id = 'rev-demo-01'").run();
+
+    // 4. Delete favorites for demo user
+    db.prepare("DELETE FROM favorites WHERE user_id = 'user-customer-nam'").run();
+
+    // 5. Delete notifications for demo user
+    db.prepare("DELETE FROM notifications WHERE user_id = 'user-customer-nam'").run();
+
+    // 6. Delete audit logs where actor is demo user
+    db.prepare("DELETE FROM audit_logs WHERE actor_id = 'user-customer-nam'").run();
+
+    // 7. Delete sessions & password resets for demo user
+    db.prepare("DELETE FROM sessions WHERE user_id = 'user-customer-nam'").run();
+    db.prepare("DELETE FROM password_resets WHERE user_id = 'user-customer-nam'").run();
+
+    // 8. Delete orders belonging to demo user or demo order IDs
+    db.prepare("DELETE FROM orders WHERE user_id = 'user-customer-nam' OR id IN ('ord-demo-01', 'ord-demo-02', 'ord-demo-03')").run();
+
+    // 9. Now safely delete demo users
+    db.prepare("DELETE FROM users WHERE id = 'user-customer-nam' OR email = 'khachhang@example.com'").run();
+  });
+}
+
+export function seed() {
+  purgeFakeData();
+
+  transaction(() => {
+    // 1. Seed Founder / CEO (Nguyễn Văn Tấn)
     const adminEmail = 'admin@vantanthedev.com';
     const adminCheck = db.prepare('SELECT id FROM users WHERE email=?').get(adminEmail) as any;
     if (!adminCheck) {
       db.prepare(`
         INSERT INTO users (id, email, name, password_hash, role, phone, company)
         VALUES (?, ?, ?, ?, 'admin', ?, ?)
-      `).run('user-admin-vt', adminEmail, 'Nguyễn Văn Tấn', hashPassword('Admin@2026!'), '+84 901 234 567', 'VanTanTheDEV Studio');
+      `).run('user-admin-vt', adminEmail, 'Nguyễn Văn Tấn (CEO & COO)', hashPassword('Admin@2026!'), '+84 901 234 567', 'VanTanTheDEV Studio');
+    } else {
+      db.prepare(`UPDATE users SET name = 'Nguyễn Văn Tấn (CEO & COO)', company = 'VanTanTheDEV Studio' WHERE id = ?`).run(adminCheck.id);
     }
 
-    // 2. Seed Demo Customer User
-    const customerEmail = 'khachhang@example.com';
-    const customerCheck = db.prepare('SELECT id FROM users WHERE email=?').get(customerEmail) as any;
-    if (!customerCheck) {
+    // 2. Seed Technical & Customer Support Team Account
+    const supportEmail = 'support@vantanthedev.com';
+    const supportCheck = db.prepare('SELECT id FROM users WHERE email=?').get(supportEmail) as any;
+    if (!supportCheck) {
       db.prepare(`
         INSERT INTO users (id, email, name, password_hash, role, phone, company)
-        VALUES (?, ?, ?, ?, 'customer', ?, ?)
-      `).run('user-customer-nam', customerEmail, 'Lê Hoàng Nam', hashPassword('Customer@2026!'), '0901234567', 'Công ty TNHH Giải Pháp TechViet');
+        VALUES (?, ?, ?, ?, 'admin', ?, ?)
+      `).run('user-support-team', supportEmail, 'Đội ngũ Kỹ thuật VanTanTheDEV', hashPassword('Support@2026!'), '+84 901 234 568', 'VanTanTheDEV Engineering Team');
     }
 
     // 3. Seed Services & Packages
@@ -477,10 +513,11 @@ export function seed() {
 
     // 6. Seed Site Settings
     const defaultSettings: [string, string][] = [
-      ['announcement', 'Nhận 02 dự án mới trong quý này · Tư vấn kiến trúc trực tiếp cùng Nguyễn Văn Tấn'],
+      ['announcement', 'Nhận 02 dự án mới trong quý này · Tư vấn giải pháp kỹ thuật cùng Đội ngũ Kỹ sư & Ban Điều Hành'],
       ['hero_headline', 'Sản phẩm số được xây đúng cách.'],
-      ['hero_subtitle', 'Website, ứng dụng và phần mềm tùy chỉnh — được thiết kế quanh nhu cầu thật của doanh nghiệp bạn.'],
+      ['hero_subtitle', 'Website, ứng dụng và phần mềm tùy chỉnh — được thiết kế và phát triển bởi Đội ngũ Kỹ sư VanTanTheDEV dưới sự định hướng của CEO Nguyễn Văn Tấn.'],
       ['contact_email', 'contact@vantanthedev.com'],
+      ['support_email', 'support@vantanthedev.com'],
       ['contact_phone', '+84 901 234 567'],
       ['vietqr_bank', 'MB Bank (Ngân hàng TMCP Quân Đội)'],
       ['vietqr_account', '0987654321'],
@@ -492,86 +529,6 @@ export function seed() {
     `);
     for (const [k, v] of defaultSettings) {
       insSetting.run(k, v);
-    }
-
-    // 7. Seed Sample Orders for Demo Customer
-    const orderCount = Number((db.prepare('SELECT COUNT(*) AS c FROM orders').get() as any).c || 0);
-    if (orderCount === 0) {
-      // Order 1: In Progress
-      const o1Id = 'ord-demo-01';
-      const o1Number = 'VT-2026-00101';
-      db.prepare(`
-        INSERT INTO orders (id, order_number, user_id, service_id, package_id, project_name, description, requirements_json, addons_json, subtotal, discount_amount, coupon_code, amount, payment_method, payment_status, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'vietqr', 'paid', 'in_progress', datetime('now', '-7 days'))
-      `).run(
-        o1Id, o1Number, 'user-customer-nam', 'svc-ecommerce', 'svc-ecommerce-pkg-2',
-        'Nền tảng thương mại điện tử Gốm Sứ Việt',
-        'Xây dựng website bán hàng cao cấp cho thương hiệu gốm thủ công xuất khẩu. Cần tích hợp quét mã VietQR tự động, quản lý kho theo biến thể màu men và hiển thị câu chuyện nghệ nhân.',
-        JSON.stringify({ targetAudience: 'Khách hàng trong nước và du khách quốc tế', features: 'Giỏ hàng, VietQR, Đa ngôn ngữ, Quản lý kho', deadline: 'Cuối tháng này', budget: '25.000.000đ - 30.000.000đ', deliveryDays: 25 }),
-        JSON.stringify([{ id: 'add-payment', title: 'Tích hợp Thanh toán Tự động', price: 3200000, delivery_days: 4 }]),
-        27200000, 2000000, 'VANTAN10', 25200000
-      );
-
-      // Messages for Order 1
-      db.prepare(`INSERT INTO messages (id, order_id, sender_id, body, system, created_at) VALUES (?, ?, ?, ?, 1, datetime('now', '-7 days'))`)
-        .run('msg-1', o1Id, 'user-customer-nam', 'Yêu cầu dự án đã được tiếp nhận. Nguyễn Văn Tấn đang phân tích phạm vi kỹ thuật.');
-      db.prepare(`INSERT INTO messages (id, order_id, sender_id, body, system, created_at) VALUES (?, ?, ?, ?, 1, datetime('now', '-6 days'))`)
-        .run('msg-2', o1Id, 'user-admin-vt', 'Thanh toán đợt 1 qua VietQR đã được xác nhận. Dự án chính thức bước vào giai đoạn thiết kế và lập trình.');
-      db.prepare(`INSERT INTO messages (id, order_id, sender_id, body, system, created_at) VALUES (?, ?, ?, ?, 0, datetime('now', '-3 days'))`)
-        .run('msg-3', o1Id, 'user-customer-nam', 'Chào anh Tấn, bên em đã gửi thêm link bộ ảnh sản phẩm độ phân giải cao qua Google Drive.');
-      db.prepare(`INSERT INTO messages (id, order_id, sender_id, body, system, created_at) VALUES (?, ?, ?, ?, 0, datetime('now', '-2 days'))`)
-        .run('msg-4', o1Id, 'user-admin-vt', 'Cảm ơn Nam, mình đã nhận đủ ảnh và đang tích hợp tối ưu nén WebP tự động. Tiến độ frontend đạt khoảng 60%.');
-
-      // Order Files for Order 1
-      db.prepare(`INSERT INTO order_files (id, order_id, user_id, file_name, file_size, file_type, file_url, is_deliverable, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, datetime('now', '-6 days'))`)
-        .run('file-1', o1Id, 'user-customer-nam', 'Brand_Guidelines_GomSuViet.pdf', 2450000, 'document', 'https://example.com/brand-guideline.pdf');
-      db.prepare(`INSERT INTO order_files (id, order_id, user_id, file_name, file_size, file_type, file_url, is_deliverable, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, datetime('now', '-2 days'))`)
-        .run('file-2', o1Id, 'user-admin-vt', 'Preview_Figma_Architecture.png', 1820000, 'image', 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80');
-
-      // Order 2: Completed with Review
-      const o2Id = 'ord-demo-02';
-      const o2Number = 'VT-2026-00088';
-      db.prepare(`
-        INSERT INTO orders (id, order_number, user_id, service_id, package_id, project_name, description, requirements_json, addons_json, subtotal, discount_amount, coupon_code, amount, payment_method, payment_status, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'vietqr', 'paid', 'completed', datetime('now', '-30 days'))
-      `).run(
-        o2Id, o2Number, 'user-customer-nam', 'svc-web', 'svc-web-pkg-2',
-        'Website Doanh Nghiệp TechViet & Bảng Giá Tự Động',
-        'Xây dựng website doanh nghiệp cho công ty công nghệ TechViet, có tính năng tính toán chi phí dịch vụ tự động cho khách hàng doanh nghiệp.',
-        JSON.stringify({ targetAudience: 'Khách hàng B2B, Startup', features: 'Bộ tính giá tương tác, CMS bài viết, Đăng ký tư vấn', deliveryDays: 14 }),
-        JSON.stringify([]),
-        12500000, 500000, 'WELCOME500', 12000000
-      );
-
-      // Review for Order 2
-      db.prepare(`
-        INSERT INTO reviews (id, order_id, user_id, service_id, rating, body, approved, created_at)
-        VALUES (?, ?, ?, ?, 5, ?, 1, datetime('now', '-18 days'))
-      `).run(
-        'rev-demo-01', o2Id, 'user-customer-nam', 'svc-web',
-        'Anh Tấn làm việc rất chuyên nghiệp, đúng hẹn và giải thích kỹ càng các quyết định kỹ thuật. Website tải nhanh ấn tượng, mã nguồn TypeScript bàn giao rất sạch và dễ đọc. Rất đáng tin cậy!'
-      );
-
-      // Order 3: Confirmed / Pending Payment
-      const o3Id = 'ord-demo-03';
-      const o3Number = 'VT-2026-00142';
-      db.prepare(`
-        INSERT INTO orders (id, order_number, user_id, service_id, package_id, project_name, description, requirements_json, addons_json, subtotal, discount_amount, coupon_code, amount, payment_method, payment_status, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'vietqr', 'pending', 'confirmed', datetime('now', '-1 days'))
-      `).run(
-        o3Id, o3Number, 'user-customer-nam', 'svc-dashboard', 'svc-dashboard-pkg-2',
-        'Hệ Thống Dashboard Quản Lý Kho & Đơn Hàng Nội Bộ',
-        'Dashboard quản trị vận hành kho nội bộ, đồng bộ đơn hàng từ nhiều kênh bán hàng và xuất báo cáo doanh thu theo tuần.',
-        JSON.stringify({ targetAudience: 'Nhân viên kho, Quản lý chi nhánh', features: 'Bảng số liệu thời gian thực, Xuất Excel, Phân quyền kho', deliveryDays: 20 }),
-        JSON.stringify([]),
-        18500000, 0, null, 18500000
-      );
-
-      // Notifications
-      db.prepare(`INSERT INTO notifications (id, user_id, title, body, link, created_at) VALUES (?, ?, ?, ?, ?, datetime('now', '-1 days'))`)
-        .run('notif-1', 'user-customer-nam', 'Yêu cầu dự án đã được xác nhận', 'Đơn hàng VT-2026-00142 đã được Nguyễn Văn Tấn xác nhận phạm vi. Vui lòng hoàn tất thanh toán đợt 1 để bắt đầu.', '/dashboard/orders/' + o3Id);
-      db.prepare(`INSERT INTO notifications (id, user_id, title, body, link, created_at) VALUES (?, ?, ?, ?, ?, datetime('now', '-2 days'))`)
-        .run('notif-2', 'user-customer-nam', 'Tiến độ mới: Gốm Sứ Việt', 'Nguyễn Văn Tấn đã cập nhật ảnh bản vẽ kiến trúc giao diện cho dự án VT-2026-00101.', '/dashboard/orders/' + o1Id);
     }
   });
 }

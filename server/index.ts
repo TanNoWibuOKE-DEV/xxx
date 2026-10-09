@@ -296,7 +296,7 @@ app.post('/api/contact', rateLimit(5, 15 * 60_000), (req, res) => {
   return res.status(201).json({
     success: true,
     data: { id },
-    message: 'Đã nhận yêu cầu dự án. Nguyễn Văn Tấn sẽ phản hồi trực tiếp qua email của bạn.'
+    message: 'Đã nhận yêu cầu dự án. Đội ngũ chuyên viên kỹ thuật VanTanTheDEV sẽ phản hồi qua email hoặc số điện thoại của bạn.'
   });
 });
 
@@ -411,7 +411,10 @@ app.post('/api/auth/forgot-password', rateLimit(5, 15 * 60_000), (req, res) => {
     .run(sha(token), user.id, new Date(Date.now() + 60 * 60_000).toISOString());
   
   audit(user.id, 'forgot_password', 'user', user.id, req.ip);
-  return pass(res, { sent: true, demoToken: token }, 'Mã đặt lại mật khẩu đã được tạo (Hết hạn trong 60 phút).');
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[AUTH] Reset token for ${user.email}: ${token}`);
+  }
+  return pass(res, { sent: true }, 'Mã đặt lại mật khẩu đã được tạo và xử lý thành công.');
 });
 
 app.post('/api/auth/reset-password', rateLimit(5, 15 * 60_000), (req, res) => {
@@ -605,7 +608,7 @@ app.post('/api/orders', auth, rateLimit(8, 60_000), (req, res) => {
       .run(randomUUID(), req.user!.id, 'Yêu cầu dự án đã được tiếp nhận', `Đơn hàng ${number} đã vào danh sách chờ xác nhận phạm vi.`, `/dashboard/orders/${id}`);
 
     db.prepare('INSERT INTO messages (id, order_id, sender_id, body, system) VALUES (?, ?, ?, ?, 1)')
-      .run(randomUUID(), id, req.user!.id, `Yêu cầu dự án ${number} (${p.data.projectName}) đã được gửi thành công. Nguyễn Văn Tấn sẽ phân tích phạm vi và phản hồi trước khi bắt đầu.`);
+      .run(randomUUID(), id, req.user!.id, `Yêu cầu dự án ${number} (${p.data.projectName}) đã được gửi thành công. Đội ngũ kỹ thuật VanTanTheDEV sẽ phân tích phạm vi kỹ thuật và phản hồi trước khi bắt đầu.`);
 
     audit(req.user!.id, 'order.create', 'order', id, req.ip);
   });
