@@ -14,6 +14,8 @@ type User = {
   role: 'customer' | 'admin';
   phone?: string | null;
   company?: string | null;
+  google_id?: string | null;
+  avatar_url?: string | null;
   suspended: number;
 };
 
@@ -33,15 +35,78 @@ const cookieName = 'vttd_session';
 const DAY = 86400000;
 
 app.disable('x-powered-by');
+app.set('trust proxy', 1);
+
 app.use(
   helmet({
-    contentSecurityPolicy: production ? undefined : false,
-    crossOriginResourcePolicy: { policy: 'cross-origin' }
+    contentSecurityPolicy: production
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: [
+              "'self'",
+              "'unsafe-inline'",
+              "'unsafe-eval'",
+              'https://accounts.google.com',
+              'https://apis.google.com'
+            ],
+            styleSrc: [
+              "'self'",
+              "'unsafe-inline'",
+              'https://fonts.googleapis.com'
+            ],
+            fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+            imgSrc: [
+              "'self'",
+              'data:',
+              'blob:',
+              'https:',
+              'http:'
+            ],
+            connectSrc: [
+              "'self'",
+              'https://accounts.google.com',
+              'https://apis.google.com',
+              'https://oauth2.googleapis.com',
+              'https://img.vietqr.io'
+            ],
+            frameSrc: [
+              "'self'",
+              'https://accounts.google.com'
+            ],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: []
+          }
+        }
+      : false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }
   })
 );
+
+// Universal CORS & Preflight handling
+app.use((req, res, next) => {
+  const origin = req.get('origin');
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 app.use(express.json({ limit: '5mb', type: 'application/json' }));
 
-// Mutating browser requests must be JSON and same-site.
+// Mutating browser requests must be JSON and legitimate origin.
+const customAllowed = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(s => s.trim().toLowerCase())
+  .filter(Boolean);
+
 app.use('/api', (req, res, next) => {
   if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
   if (!req.is('application/json')) {
@@ -51,20 +116,35 @@ app.use('/api', (req, res, next) => {
     });
   }
   const origin = req.get('origin');
-  const allowed = new Set([
-    `${req.protocol}://${req.get('host')}`,
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:3001',
-    'http://127.0.0.1:3001'
-  ]);
-  if (origin && !allowed.has(origin)) {
-    return res.status(403).json({
-      success: false,
-      error: { code: 'ORIGIN_REJECTED', message: 'Nguồn yêu cầu không hợp lệ.' }
-    });
+  if (!origin) return next();
+
+  try {
+    const originUrl = new URL(origin);
+    const hostHeader = (req.get('host') || '').toLowerCase();
+    const originHost = originUrl.host.toLowerCase();
+
+    // 1. Same host matching (handles http vs https reverse-proxy discrepancies)
+    const isSameHost = originHost === hostHeader;
+
+    // 2. Local development origins
+    const isLocal = ['localhost', '127.0.0.1'].includes(originUrl.hostname);
+
+    // 3. Explicitly allowed custom origins
+    const isAllowedCustom = customAllowed.some(
+      allowed => origin.toLowerCase() === allowed || originHost === allowed
+    );
+
+    if (isSameHost || isLocal || isAllowedCustom) {
+      return next();
+    }
+  } catch {
+    // Malformed origin header
   }
-  next();
+
+  return res.status(403).json({
+    success: false,
+    error: { code: 'ORIGIN_REJECTED', message: 'Nguồn yêu cầu không hợp lệ.' }
+  });
 });
 
 const attempts = new Map<string, { count: number; reset: number }>();
@@ -93,7 +173,7 @@ setInterval(() => {
 
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 
-function issueSession(res: Response, userId: string) {
+function issueSession(res: Response, userId: string): string {
   const token = randomBytes(32).toString('base64url');
   db.prepare('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)').run(
     sha(token),
@@ -107,10 +187,34 @@ function issueSession(res: Response, userId: string) {
     path: '/',
     maxAge: 14 * DAY
   });
+  return token;
+}
+
+const cookieParser = (req: Request, _res: Response, next: NextFunction) => {
+  const raw = req.headers.cookie || '';
+  const item = raw
+    .split(';')
+    .map(x => x.trim())
+    .find(x => x.startsWith(`${cookieName}=`));
+  (req as any).cookies = {
+    ...(req as any).cookies,
+    [cookieName]: item ? decodeURIComponent(item.slice(cookieName.length + 1)) : undefined
+  };
+  next();
+};
+app.use(cookieParser);
+
+function extractToken(req: Request): string | undefined {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const b = authHeader.slice(7).trim();
+    if (b) return b;
+  }
+  return (req as any).cookies?.[cookieName];
 }
 
 function auth(req: Request, res: Response, next: NextFunction) {
-  const token = (req as any).cookies?.[cookieName] as string | undefined;
+  const token = extractToken(req);
   if (!token) {
     return res.status(401).json({
       success: false,
@@ -119,7 +223,7 @@ function auth(req: Request, res: Response, next: NextFunction) {
   }
   const session = db
     .prepare(
-      `SELECT u.id, u.email, u.name, u.role, u.phone, u.company, u.suspended 
+      `SELECT u.id, u.email, u.name, u.role, u.phone, u.company, u.google_id, u.avatar_url, u.suspended 
        FROM sessions s 
        JOIN users u ON u.id = s.user_id 
        WHERE s.token_hash = ? AND s.expires_at > ?`
@@ -162,20 +266,6 @@ function verifyPassword(password: string, stored: string) {
   const actual = scryptSync(password, salt, 64);
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
-
-const cookieParser = (req: Request, _res: Response, next: NextFunction) => {
-  const raw = req.headers.cookie || '';
-  const item = raw
-    .split(';')
-    .map(x => x.trim())
-    .find(x => x.startsWith(`${cookieName}=`));
-  (req as any).cookies = {
-    ...(req as any).cookies,
-    [cookieName]: item ? decodeURIComponent(item.slice(cookieName.length + 1)) : undefined
-  };
-  next();
-};
-app.use(cookieParser);
 
 const serviceView = `
   SELECT s.*, 
@@ -358,11 +448,21 @@ app.post('/api/auth/register', rateLimit(10, 15 * 60_000), (req, res) => {
   db.prepare('INSERT INTO users (id, email, name, password_hash, role, phone, company) VALUES (?, ?, ?, ?, ?, ?, ?)')
     .run(id, email.trim().toLowerCase(), name, hashPassword(password), 'customer', phone || null, company || null);
 
-  issueSession(res, id);
+  const token = issueSession(res, id);
   audit(id, 'register', 'user', id, req.ip);
+  const userData = {
+    id,
+    email: email.toLowerCase(),
+    name,
+    role: 'customer' as const,
+    phone: phone || null,
+    company: company || null,
+    google_id: null,
+    avatar_url: null
+  };
   return res.status(201).json({
     success: true,
-    data: { id, email: email.toLowerCase(), name, role: 'customer', phone: phone || null, company: company || null },
+    data: { user: userData, token },
     message: 'Tài khoản đã được tạo thành công.'
   });
 });
@@ -380,17 +480,124 @@ app.post('/api/auth/login', rateLimit(15, 15 * 60_000), (req, res) => {
   }
   if (user.suspended) return fail(res, 403, 'ACCOUNT_SUSPENDED', 'Tài khoản của bạn hiện đang tạm khóa.');
 
-  issueSession(res, user.id);
+  const token = issueSession(res, user.id);
   audit(user.id, 'login', 'user', user.id, req.ip);
   return pass(
     res,
-    { id: user.id, email: user.email, name: user.name, role: user.role, phone: user.phone, company: user.company },
+    {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        phone: user.phone,
+        company: user.company,
+        google_id: user.google_id || null,
+        avatar_url: user.avatar_url || null
+      },
+      token
+    },
     'Đăng nhập thành công.'
   );
 });
 
-app.post('/api/auth/logout', auth, (req, res) => {
-  const token = (req as any).cookies[cookieName];
+app.post('/api/auth/google', rateLimit(20, 15 * 60_000), (req, res) => {
+  try {
+    const body = req.body || {};
+    let googleId = body.google_id ? String(body.google_id).trim() : '';
+    let email = body.email ? String(body.email).toLowerCase().trim() : '';
+    let name = body.name ? String(body.name).trim() : '';
+    let avatarUrl = body.avatar_url ? String(body.avatar_url).trim() : null;
+
+    // Decode Google ID Token (JWT) if credential provided
+    if (body.credential && typeof body.credential === 'string') {
+      try {
+        const parts = body.credential.split('.');
+        if (parts.length >= 2) {
+          const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+          const decoded = JSON.parse(Buffer.from(base64, 'base64').toString('utf8'));
+          if (decoded.sub) googleId = String(decoded.sub);
+          if (decoded.email) email = String(decoded.email).toLowerCase().trim();
+          if (decoded.name) name = String(decoded.name).trim();
+          if (decoded.picture) avatarUrl = String(decoded.picture).trim();
+        }
+      } catch (e) {
+        console.warn('Failed to parse Google JWT credential:', e);
+      }
+    }
+
+    if (!email && !googleId) {
+      return fail(res, 400, 'GOOGLE_AUTH_FAILED', 'Không nhận được thông tin tài khoản Google hợp lệ.');
+    }
+
+    // 1. Check if user with google_id exists
+    let user: any = null;
+    if (googleId) {
+      user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(googleId);
+    }
+
+    // 2. If not, match by email
+    if (!user && email) {
+      user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+      if (user) {
+        db.prepare('UPDATE users SET google_id = COALESCE(google_id, ?), avatar_url = COALESCE(avatar_url, ?) WHERE id = ?')
+          .run(googleId || null, avatarUrl || null, user.id);
+        user = db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
+      }
+    }
+
+    // 3. If user doesn't exist, create customer
+    if (!user) {
+      const id = randomUUID();
+      const cleanEmail = email || `google_${googleId}@vantanthedev.local`;
+      const cleanName = name || 'Khách hàng Google';
+      const randomPass = hashPassword(randomBytes(32).toString('hex'));
+
+      db.prepare(`
+        INSERT INTO users (id, email, name, password_hash, role, google_id, avatar_url)
+        VALUES (?, ?, ?, ?, 'customer', ?, ?)
+      `).run(id, cleanEmail, cleanName, randomPass, googleId || null, avatarUrl || null);
+
+      user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+      audit(id, 'register.google', 'user', id, req.ip);
+    } else {
+      if (avatarUrl && !user.avatar_url) {
+        db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(avatarUrl, user.id);
+        user.avatar_url = avatarUrl;
+      }
+      audit(user.id, 'login.google', 'user', user.id, req.ip);
+    }
+
+    if (user.suspended) {
+      return fail(res, 403, 'ACCOUNT_SUSPENDED', 'Tài khoản của bạn hiện đang tạm khóa.');
+    }
+
+    const token = issueSession(res, user.id);
+    return pass(
+      res,
+      {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          phone: user.phone,
+          company: user.company,
+          google_id: user.google_id || null,
+          avatar_url: user.avatar_url || null
+        },
+        token
+      },
+      'Đăng nhập Google thành công.'
+    );
+  } catch (err: any) {
+    console.error('Google auth error:', err);
+    return fail(res, 500, 'GOOGLE_AUTH_ERROR', 'Đã có lỗi khi đăng nhập với Google.');
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  const token = extractToken(req);
   if (token) db.prepare('DELETE FROM sessions WHERE token_hash = ?').run(sha(token));
   res.clearCookie(cookieName, { httpOnly: true, secure: production, sameSite: 'lax', path: '/' });
   return pass(res, null, 'Đã đăng xuất an toàn.');
@@ -965,7 +1172,7 @@ app.patch('/api/admin/orders/:id/payment', auth, admin, (req, res) => {
 
 app.get('/api/admin/customers', auth, admin, (_req, res) => {
   const customers = db.prepare(`
-    SELECT u.id, u.email, u.name, u.phone, u.company, u.suspended, u.created_at,
+    SELECT u.id, u.email, u.name, u.phone, u.company, u.google_id, u.avatar_url, u.suspended, u.created_at,
       COUNT(o.id) AS total_orders,
       COALESCE(SUM(CASE WHEN o.payment_status = 'paid' THEN o.amount ELSE 0 END), 0) AS total_spent
     FROM users u 
@@ -1170,4 +1377,4 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   return fail(res, 500, 'INTERNAL_ERROR', 'Đã có lỗi khi xử lý yêu cầu. Vui lòng thử lại.');
 });
 
-app.listen(port, () => console.log(`VanTanTheDEV API listening on http://localhost:${port}`));
+app.listen(port, '0.0.0.0', () => console.log(`VanTanTheDEV API listening on http://0.0.0.0:${port}`));

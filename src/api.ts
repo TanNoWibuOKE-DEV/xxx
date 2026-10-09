@@ -8,20 +8,49 @@ export class ApiError extends Error {
   }
 }
 
+const TOKEN_KEY = 'vttd_token';
+
+export function getAuthToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthToken(token: string | null) {
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_KEY);
+    }
+  } catch {}
+}
+
 export async function api<T = any>(url: string, options: RequestInit = {}): Promise<T> {
+  const token = getAuthToken();
+  const headers = new Headers(options.headers || {});
+  if (options.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
   const response = await fetch(url, {
     ...options,
     credentials: 'include',
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers
-    }
+    headers
   });
   const body = await response.json().catch(() => ({
     success: false,
     error: { message: 'Không thể đọc phản hồi từ máy chủ.' }
   }));
   if (!response.ok || body.success === false) {
+    if (response.status === 401 && (body.error?.code === 'SESSION_INVALID' || body.error?.code === 'AUTH_REQUIRED')) {
+      setAuthToken(null);
+    }
     throw new ApiError(body.error?.message || 'Yêu cầu chưa thành công.', response.status, body.error?.code || 'ERROR');
   }
   return body.data as T;

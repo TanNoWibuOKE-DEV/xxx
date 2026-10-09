@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
   role TEXT NOT NULL DEFAULT 'customer' CHECK (role IN ('customer','admin')),
   phone TEXT,
   company TEXT,
+  google_id TEXT UNIQUE,
+  avatar_url TEXT,
   suspended INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

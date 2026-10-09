@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -k \"vite --host 0.0.0.0\" \"tsx watch server/index.ts\"",
-    "build": "tsc -p tsconfig.server.json && tsc -p tsconfig.json && vite build",
+    "build": "tsc -p tsconfig.server.json && node -e \"fs.mkdirSync('dist-server/server',{recursive:true});fs.copyFileSync('server/schema.sql','dist-server/server/schema.sql')\" && tsc -p tsconfig.json && vite build",
     "start": "node dist-server/server/index.js",
     "db:seed": "tsx server/seed.ts",
     "admin:create": "tsx server/create-admin.ts"

@@ -1446,6 +1446,124 @@
   display: none;
 }
 
+/* Google Auth Button & Auth Separator */
+.google-auth-block {
+  margin-bottom: 16px;
+}
+
+.google-signin-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border-radius: 6px;
+  border: 1px solid #333947;
+  background: #141720;
+  color: #e2e8f0;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.google-signin-btn:hover {
+  background: #1c212d;
+  border-color: #4b5568;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.google-signin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 18px 0;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-divider span {
+  padding: 0 12px;
+}
+
+/* Booking Step 0 Gate */
+.booking-auth-gate {
+  max-width: 680px;
+  margin: 40px auto;
+  padding: 36px;
+  background: #0f1218;
+  border: 1px solid #282f3d;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.booking-auth-gate-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.booking-auth-gate-header h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 10px 0 8px;
+  color: #f1f5f9;
+}
+
+.booking-auth-gate-header p {
+  color: #94a3b8;
+  font-size: 14px;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.booking-auth-tabs {
+  display: flex;
+  gap: 8px;
+  background: #161a23;
+  padding: 4px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.booking-auth-tab {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.booking-auth-tab.active {
+  background: #252b38;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Portfolio Page */
 .portfolio-grid {
   max-width: var(--max);

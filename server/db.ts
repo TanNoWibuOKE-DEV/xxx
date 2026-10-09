@@ -11,10 +11,17 @@ fs.mkdirSync(dataDir, { recursive: true });
 export const db = new DatabaseSync(path.join(dataDir, 'vantanthedev.sqlite'));
 db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
 
-const schemaPath = fs.existsSync(path.join(here, 'schema.sql'))
-  ? path.join(here, 'schema.sql')
-  : path.resolve(here, '../../server/schema.sql');
-db.exec(fs.readFileSync(schemaPath, 'utf8'));
+const schemaCandidates = [
+  path.join(here, 'schema.sql'),
+  path.resolve(here, '../../server/schema.sql'),
+  path.resolve(here, '../server/schema.sql'),
+  path.resolve(process.cwd(), 'server/schema.sql'),
+  path.resolve(process.cwd(), 'dist-server/server/schema.sql')
+];
+const schemaPath = schemaCandidates.find(p => fs.existsSync(p));
+if (schemaPath) {
+  db.exec(fs.readFileSync(schemaPath, 'utf8'));
+}
 
 export function ensureColumns() {
   const tableCols = (table: string) => {
@@ -39,6 +46,8 @@ export function ensureColumns() {
   if (userCols.size > 0) {
     if (!userCols.has('phone')) db.exec('ALTER TABLE users ADD COLUMN phone TEXT');
     if (!userCols.has('company')) db.exec('ALTER TABLE users ADD COLUMN company TEXT');
+    if (!userCols.has('google_id')) db.exec('ALTER TABLE users ADD COLUMN google_id TEXT');
+    if (!userCols.has('avatar_url')) db.exec('ALTER TABLE users ADD COLUMN avatar_url TEXT');
   }
 
   const svcCols = tableCols('services');

@@ -67,25 +67,46 @@ npm run dev
 npm run build
 npm start
 ```
-Hệ thống sẽ chạy tại `http://localhost:3001`.
+Hệ thống sẽ chạy tại `http://localhost:3001` (hoặc cổng được định cấu hình qua `PORT`).
 
 ---
 
-## 🔑 Tài Khoản Trải Nghiệm Mẫu (Demo Credentials)
+## 🌐 Triển Khai Lên Web (Production Deployment Guide)
 
-* **Quản trị viên (Admin):**
-  * Email: `admin@vantanthedev.com`
-  * Mật khẩu: `Admin@2026!`
-* **Khách hàng mẫu (Customer):**
-  * Email: `khachhang@example.com`
-  * Mật khẩu: `Customer@2026!`
+Hệ thống được thiết kế tối ưu hóa đặc biệt để chạy ổn định trên các nền tảng đám mây (Render, Railway, Fly.io, Vercel, Docker hoặc VPS riêng):
 
-*(Có sẵn nút đăng nhập nhanh 1-chạm tại trang `/login`)*
+* **Reverse Proxy & SSL:** Đã tích hợp `app.set('trust proxy', 1)` để tự động nhận diện giao thức HTTPS từ Cloudflare/Nginx/Render, khắc phục hoàn toàn lỗi `403 ORIGIN_REJECTED` khi deploy.
+* **CORS & Preflight:** Hỗ trợ cấu hình `ALLOWED_ORIGINS` cho các trường hợp tách rời frontend và backend trên các domain khác nhau.
+* **Content Security Policy (CSP):** Cấu hình linh hoạt cho phép Google OAuth (`accounts.google.com`), Google Fonts, và mã VietQR (`img.vietqr.io`).
+* **Phiên làm việc kép (Dual Auth):** Hỗ trợ song song cả HTTP-only Cookie và `Authorization: Bearer <token>` lưu trữ an toàn, đảm bảo không bị mất phiên khi triển khai cross-domain hoặc trình duyệt chặn cookie bên thứ 3.
+* **Host Binding:** Tự động lắng nghe trên `0.0.0.0` tương thích tuyệt đối với Docker container.
+
+### Các biến môi trường tùy chọn (.env):
+```env
+PORT=3001
+NODE_ENV=production
+ALLOWED_ORIGINS=https://yourdomain.com,https://client.yourdomain.com
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+```
+
+---
+
+## 🔐 Cơ Chế Xác Thực & Đăng Nhập
+
+* **Bắt buộc có tài khoản trước khi bắt đầu dự án:** Khách hàng cần đăng ký tài khoản hoặc đăng nhập trước khi tiến hành đặt hàng dịch vụ hoặc khởi tạo dự án để đảm bảo cam kết bảo mật NDA và cấp quyền truy cập Client Workspace.
+* **Đăng nhập với Google (Google Sign-In):** Tích hợp Google Identity Services SDK chuẩn mực, tự động liên kết tài khoản và đồng bộ ảnh đại diện Google.
+* **Cơ sở dữ liệu thực tế (Real Database):** Sử dụng SQLite native tốc độ cao với WAL mode, toàn vẹn dữ liệu qua transactions và tự động di trú lược đồ (auto-migration).
+
+### 🔑 Tài khoản Quản trị viên khởi tạo ban đầu:
+* **Email:** `admin@vantanthedev.com`
+* **Mật khẩu:** `Admin@2026!`
+
+*(Khách hàng đăng ký tài khoản trực tiếp qua nút Đăng ký hoặc Đăng nhập nhanh bằng Google tại trang `/register` hoặc trực tiếp tại bước đặt dự án).*
 
 ---
 
 ## 📄 Bản Quyền & Tác Giả (Author)
 
-* **Chủ sở hữu:** Nguyễn Văn Tấn
+* **Chủ sở hữu & Giám đốc vận hành (CEO & COO):** Nguyễn Văn Tấn
 * **Brand:** VanTanTheDEV
-* **Email:** `contact@vantanthedev.com`
+* **Email liên hệ:** `contact@vantanthedev.com`
