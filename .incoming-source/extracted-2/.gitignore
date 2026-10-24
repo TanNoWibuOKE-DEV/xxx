@@ -6,3 +6,4 @@ data/
 .DS_Store
 *.zip
 test-e2e.mjs
+.vercel
